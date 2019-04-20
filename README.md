@@ -74,4 +74,3 @@ $ install_packages apt mc vim
 Understanding the result:
 
 ### 2. remove_packages
->>>>>>> 5a9935e... Add initial commit

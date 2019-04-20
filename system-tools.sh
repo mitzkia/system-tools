@@ -5,12 +5,12 @@ source pip-functions.sh
 source snap-functions.sh
 source dpkg-functions.sh
 
+project_home=$(pwd)
 
 function install_packages() {
     # has effect on system: yes
     # needs to save state before-after: yes
     # needs to save output: yes
-    echo -e "\n> install packages"
     package_manager=$1
     packages=${@:2}
     for package in ${packages}; do
@@ -43,7 +43,6 @@ function remove_packages() {
     # has effect on system: yes
     # needs to save state before-after: yes
     # needs to save output: yes
-    echo -e "\n> remove packages"
     package_manager=$1
     packages=${@:2}
     for package in ${packages}; do
@@ -69,7 +68,6 @@ function update_packages() {
     # has effect on system: yes
     # needs to save state before-after: yes
     # needs to save output: yes
-    echo -e "\n> update packages"
     create_working_dir "update"
     save_system_state "before"
 
@@ -105,7 +103,7 @@ function save_system_state() {
         echo -e "\n \e[4m\e[92mStarting process - save system state:\e[m "
         create_working_dir "system_state"
     else
-        echo ">>> saving system state ${when}"
+        echo -e "\n    \e[33mStarting subtask - save system state:\e[m " "${when}"
     fi
 
     list_apt_packages
@@ -153,17 +151,17 @@ function compare_states_before_after() {
 
         diff --ignore-all-space "${stdout_file_before}" "${stdout_file_after}" | grep -v "\-\-\-" | sort | grep "^> \|^< " 1> "${stdout_file_before_after_diff}"
         if [[ -s ${stdout_file_before_after_diff} ]]; then
-            echo -e "\n    \e[33mFound difference in ${stdout_file_before_after_diff}:\e[m"
+            echo -e "\n    \e[4m\e[93mFound difference in ${stdout_file_before_after_diff}:\e[m"
             cat "${stdout_file_before_after_diff}"
         fi
     done
+    cd ${project_home}
 }
 
 function handle_execution_error() {
-    return_value=$1
-    stderr_file=$2
-    if [[ ${return_value} -ne 0 ]]; then
-        echo "Error occured during execution!!!"
+    stderr_file=$1
+    if [[ -s ${stderr_file} ]]; then
+        echo -e "\n \e[4m\e[91mError occured during execution!!!\e[m ${stderr_file}"
         cat "${stderr_file}"
     fi
 }
@@ -196,7 +194,7 @@ function list_commands() {
     compgen -c | sort | uniq \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 }
 
 function list_environment_variables() {
@@ -204,7 +202,7 @@ function list_environment_variables() {
     printenv | grep -v PWD | sort | uniq \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 }
 
 function list_systemd_services() {
@@ -212,7 +210,7 @@ function list_systemd_services() {
     systemctl -a \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 }
 
 function list_root_etc() {
@@ -220,7 +218,7 @@ function list_root_etc() {
     sudo find /etc/ \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 
 }
 
@@ -229,7 +227,7 @@ function list_home_local() {
     find ~/.local/ \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 }
 
 function list_home_config() {
@@ -237,7 +235,7 @@ function list_home_config() {
     find ~/.config/ \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 }
 
 function list_home_hiddens() {
@@ -245,7 +243,8 @@ function list_home_hiddens() {
     cd ${HOME} ; find -mindepth 1 -prune -name '.*' \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
+    cd ${project_home}
 }
 
 function list_apt_cache_policy() {
@@ -253,7 +252,7 @@ function list_apt_cache_policy() {
     apt-cache policy \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 }
 
 function list_apt_key_list() {
@@ -261,7 +260,7 @@ function list_apt_key_list() {
     apt-key list \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 }
 
 function list_uname() {
@@ -269,7 +268,7 @@ function list_uname() {
     uname -a \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 }
 
 function list_lsb_release() {
@@ -277,7 +276,7 @@ function list_lsb_release() {
     lsb_release -a \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 }
 
 function list_mount() {
@@ -285,7 +284,7 @@ function list_mount() {
     mount \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 }
 
 function list_ulimit() {
@@ -293,5 +292,5 @@ function list_ulimit() {
     ulimit -a \
         2> "${working_dir}/${command_id}_${when}_stderr.log" \
         1> "${working_dir}/${command_id}_${when}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_${when}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_${when}_stderr.log"
 }

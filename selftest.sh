@@ -9,6 +9,9 @@ search_packages tree mc
 install_packages apt tree mc
 
 save_system_state
-# update_packages
+update_packages
 
-tree ${HOME}/micek_system_state3
+# tree ${HOME}/micek_system_state3
+
+remove_packages pip pytest
+install_packages pip pytest

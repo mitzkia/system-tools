@@ -1,21 +1,21 @@
 #!/bin/bash
 
 function install_apt_package() {
-    echo -e "\n    \e[4m\e[93mInstall apt package:\e[m " "${package}"
+    echo -e "\n    \e[33mStarting subtask - install apt package\e[m " "${package}"
     command_id="apt_install"
     sudo apt-get install --yes --no-install-recommends "${package}" \
         2> "${working_dir}/${command_id}_stderr.log" \
         1> "${working_dir}/${command_id}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_stderr.log"
 }
 
 function remove_apt_package() {
-    echo -e "\n    \e[4m\e[93mRemove apt package:\e[m " "${package}"
+    echo -e "\n    \e[33mStarting subtask - remove apt package\e[m " "${package}"
     command_id="apt_remove"
     sudo apt-get remove --purge --yes "${package}" \
         2> "${working_dir}/${command_id}_stderr.log" \
         1> "${working_dir}/${command_id}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_stderr.log"
 }
 
 function autoremove_apt_packages() {
@@ -24,7 +24,7 @@ function autoremove_apt_packages() {
     sudo apt-get autoremove --yes \
         2> "${working_dir}/${command_id}_stderr.log" \
         1> "${working_dir}/${command_id}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_stderr.log"
 }
 
 function update_apt_packages() {
@@ -33,7 +33,7 @@ function update_apt_packages() {
     sudo apt-get update \
         2> "${working_dir}/${command_id}_stderr.log" \
         1> "${working_dir}/${command_id}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_stderr.log"
 }
 
 function upgrade_apt_packages_internal() {
@@ -42,7 +42,7 @@ function upgrade_apt_packages_internal() {
     sudo apt-get upgrade --yes \
         2> "${working_dir}/${command_id}_stderr.log" \
         1> "${working_dir}/${command_id}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_stderr.log"
 }
 
 function dist_upgrade_apt_packages() {
@@ -51,7 +51,7 @@ function dist_upgrade_apt_packages() {
     sudo apt-get dist-upgrade --yes \
         2> "${working_dir}/${command_id}_stderr.log" \
         1> "${working_dir}/${command_id}_stdout.log"
-    handle_execution_error $? "${working_dir}/${command_id}_stderr.log"
+    handle_execution_error "${working_dir}/${command_id}_stderr.log"
 }
 
 function upgrade_apt_packages() {
@@ -63,7 +63,7 @@ function upgrade_apt_packages() {
 function search_for_apt_package() {
     result=$(apt-cache policy "^${package}$" | grep --color=never "${package}\|Candidate")
     if [[ -n $result ]]; then
-        echo -e "\n \e[92mFound apt package with version:\e[m "
+        echo -e "\n \e[4m\e[93mFound apt package with version:\e[m "
         echo -e "${result}"
     fi
 }
