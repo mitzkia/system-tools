@@ -3,10 +3,10 @@
 source system-tools.sh
 
 save_system_state
-update_apt_packages
+# update_apt_packages
 
 # install python packages
-install_packages apt python3-pip python3-setuptools
+install_packages apt python3-pip python3-setuptools libcairo2-dev pkg-config python3-dev libgirepository1.0-dev
 install_packages pip pip wheel
 
 # install editors
