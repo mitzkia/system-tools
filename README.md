@@ -2,7 +2,7 @@
 
 ## The goal of this project
 
-* bla-bla
+* To give a general interface for using various package managers of Ubuntu
 
 ### Supported package managers
 
