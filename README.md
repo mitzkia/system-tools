@@ -1,8 +1,9 @@
 # About the project
 
-## The goal of this project
+## The main goals of this project
 
 * To give a general interface for using various package managers of Ubuntu
+* To give a detailed description about the changes on the system after a certain package manager commands
 
 ### Supported package managers
 
