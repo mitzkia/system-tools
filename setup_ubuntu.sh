@@ -2,17 +2,22 @@
 
 sudo apt update
 sudo apt upgrade -y
+sudo apt autoremove -y
 
 sudo apt install --no-install-recommends --yes \
     apt-transport-https \
     ca-certificates \
     curl \
+    gdb \
     jq \
     mc \
     openssh-server \
     openssh-client \
     software-properties-common \
+    tcpdump \
+    tig \
     tree \
+    valgrind \
     vim-tiny \
     wget
 
@@ -57,6 +62,7 @@ sudo apt-get update
 sudo apt install --yes python3.8-distutils python3.8
 sudo python3.8 -m pip install --user -U
     flake8 \
+    mypy \
     pip \
     pre-commit \
     pyflakes \
